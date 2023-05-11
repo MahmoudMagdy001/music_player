@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -9,16 +11,26 @@ import 'widgets/media_data.dart';
 import 'widgets/controls.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
-  const AudioPlayerScreen({super.key});
+  const AudioPlayerScreen({Key? key}) : super(key: key);
 
   @override
-  State<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
+  _AudioPlayerScreenState createState() => _AudioPlayerScreenState();
 }
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
-  late AudioPlayer _audioPlayer;
+  var scaffoldkey = GlobalKey<ScaffoldState>();
+  bool isBottomSheetShown = false;
+  IconData fabIcon = Icons.arrow_drop_up_rounded;
 
-  final _playlist = ConcatenatingAudioSource(
+  void changeBottomSheetState({
+    required bool isShow,
+    required IconData icon,
+  }) {
+    isBottomSheetShown = isShow;
+    fabIcon = icon;
+  }
+
+  final playlist = ConcatenatingAudioSource(
     children: [
       AudioSource.uri(
         Uri.parse('asset:///assets/audio/music.mp3'),
@@ -45,17 +57,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     ],
   );
 
+  late AudioPlayer _audioPlayer;
+
   Stream<PositionData> get _positionDataStream =>
       Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
         _audioPlayer.positionStream,
         _audioPlayer.bufferedPositionStream,
         _audioPlayer.durationStream,
-        (
-          position,
-          bufferedPosition,
-          duration,
-        ) =>
-            PositionData(
+        (position, bufferedPosition, duration) => PositionData(
           position,
           bufferedPosition,
           duration ?? Duration.zero,
@@ -71,7 +80,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
 
   Future<void> _init() async {
     await _audioPlayer.setLoopMode(LoopMode.all);
-    await _audioPlayer.setAudioSource(_playlist);
+    await _audioPlayer.setAudioSource(playlist);
   }
 
   @override
@@ -83,6 +92,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldkey,
+      floatingActionButton: musicList(context),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -154,6 +165,76 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  FloatingActionButton musicList(BuildContext context) {
+    return FloatingActionButton(
+      backgroundColor: const Color(0xFF144771),
+      child: Icon(fabIcon),
+      onPressed: () {
+        if (!isBottomSheetShown) {
+          scaffoldkey.currentState?.showBottomSheet(
+            backgroundColor: const Color(0xFF144771),
+            elevation: 20.0,
+            (context) {
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    StreamBuilder<SequenceState?>(
+                      stream: _audioPlayer.sequenceStateStream,
+                      builder: (context, snapshot) {
+                        final state = snapshot.data;
+                        if (state?.sequence.isEmpty ?? true) {
+                          return const SizedBox();
+                        }
+                        return BottomSheet(
+                          onClosing: () {},
+                          builder: (BuildContext context) {
+                            return SizedBox(
+                              height: 300,
+                              child: ListView.builder(
+                                itemCount: state!.sequence.length,
+                                itemBuilder: (context, index) {
+                                  final metadata =
+                                      state.sequence[index].tag as MediaItem;
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          metadata.artUri.toString()),
+                                    ),
+                                    title: Text(metadata.title),
+                                    subtitle: Text(metadata.artist ?? ''),
+                                    onTap: () async {
+                                      await _audioPlayer.seek(Duration.zero,
+                                          index: index);
+                                      _audioPlayer.play();
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+          isBottomSheetShown = true;
+          fabIcon = Icons.arrow_drop_down_rounded;
+        } else {
+          Navigator.of(context).maybePop();
+          isBottomSheetShown = false;
+          fabIcon = Icons.arrow_drop_up_rounded;
+        }
+        setState(() {});
+      },
     );
   }
 }
