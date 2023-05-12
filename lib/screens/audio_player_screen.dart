@@ -53,7 +53,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         ),
       ),
       AudioSource.uri(
-        Uri.parse('asset:///assets/audio/Saaban-Aleky.mp3'),
+        Uri.parse('asset:///assets/audio/Mesh-Nadman.mp3'),
         tag: MediaItem(
           id: '2',
           title: 'MUSliM - Mesh Nadman',
@@ -226,7 +226,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             (context) {
               return Container(
                 color: Colors.white,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(5),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
