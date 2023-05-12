@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 import 'firebase_options.dart';
-import 'screens/audio_player_screen.dart';
+import 'screens/player_screen/audio_player_screen.dart';
 
 Future<void> main() async {
   await JustAudioBackground.init(

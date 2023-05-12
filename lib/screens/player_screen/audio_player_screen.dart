@@ -4,7 +4,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:music_player/screens/data/position_data.dart';
+import 'package:music_player/screens/player_screen/data/position_data.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'widgets/media_data.dart';
