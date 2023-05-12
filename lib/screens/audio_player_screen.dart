@@ -43,15 +43,61 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         ),
       ),
       AudioSource.uri(
-        Uri.parse(
-            'https://traffic.megaphone.fm/LI9282413157.mp3?updated=1666999832'),
+        Uri.parse('asset:///assets/audio/Saaban-Aleky.mp3'),
         tag: MediaItem(
           id: '1',
-          title:
-              '4 predictions for the future of the creator economy [Creator Support]',
-          artist: 'the Colin and Samir Show',
+          title: 'MUSliM - Saaban Aleky',
+          artist: 'MUSliM',
           artUri: Uri.parse(
-              'https://people.com/thmb/1fYpw-YWFPUOwkRO78VwxJ86evg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(665x0:667x2):format(webp)/gettyimages-567297577-2000-bd49c3564bf3430388205cf7994dcf18.jpg'),
+              'https://mediaaws.almasryalyoum.com/news/large/2023/03/10/2052244_0.jpeg'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Saaban-Aleky.mp3'),
+        tag: MediaItem(
+          id: '2',
+          title: 'MUSliM - Mesh Nadman',
+          artist: 'MUSliM',
+          artUri: Uri.parse('https://i.ytimg.com/vi/VH9oYeAtvN8/hqdefault.jpg'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Meen-Kan-Sabab.mp3'),
+        tag: MediaItem(
+          id: '3',
+          title: 'MUSliM - Meen Kan Sabab ',
+          artist: 'MUSliM',
+          artUri: Uri.parse(
+              'https://i.scdn.co/image/ab67616d0000b273fb7a625e739662cb3aac982e'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Aleb-Fel-Dafater.mp3'),
+        tag: MediaItem(
+          id: '4',
+          title: 'MUSliM - Aleb Fel Dafater',
+          artist: 'MUSliM',
+          artUri: Uri.parse('https://img.youtube.com/vi/uv2_g7wCvdw/0.jpg'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Etnaset.mp3'),
+        tag: MediaItem(
+          id: '5',
+          title: 'MUSliM - Etnaset',
+          artist: 'MUSliM',
+          artUri: Uri.parse(
+              'https://www.matb3aa.com/wp-content/uploads/2021/10/Etnasina-200x270.jpg'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Abl-Mawsalek.mp3'),
+        tag: MediaItem(
+          id: '6',
+          title: 'MUSliM - Abl Mawsalek',
+          artist: 'MUSliM',
+          artUri: Uri.parse(
+              'https://artwork.anghcdn.co/webp/?id=144816215&size=296'),
         ),
       ),
     ],
