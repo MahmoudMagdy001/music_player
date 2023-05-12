@@ -22,7 +22,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   bool isBottomSheetShown = false;
   IconData floatingIcon = Icons.arrow_drop_up_rounded;
 
- 
   final playlist = ConcatenatingAudioSource(
     children: [
       AudioSource.uri(
@@ -134,17 +133,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       key: scaffoldkey,
       floatingActionButton: musicList(context),
       extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0.0,
-      //   leading: IconButton(
-      //     onPressed: () {},
-      //     icon: const Icon(Icons.keyboard_arrow_down_rounded),
-      //   ),
-      //   actions: [
-      //     IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
-      //   ],
-      // ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        elevation: 0.0,
+      ),
       body: Container(
         padding: const EdgeInsets.all(20),
         height: double.infinity,
