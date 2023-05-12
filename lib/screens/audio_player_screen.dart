@@ -20,16 +20,9 @@ class AudioPlayerScreen extends StatefulWidget {
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   var scaffoldkey = GlobalKey<ScaffoldState>();
   bool isBottomSheetShown = false;
-  IconData fabIcon = Icons.arrow_drop_up_rounded;
+  IconData floatingIcon = Icons.arrow_drop_up_rounded;
 
-  void changeBottomSheetState({
-    required bool isShow,
-    required IconData icon,
-  }) {
-    isBottomSheetShown = isShow;
-    fabIcon = icon;
-  }
-
+ 
   final playlist = ConcatenatingAudioSource(
     children: [
       AudioSource.uri(
@@ -217,7 +210,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   FloatingActionButton musicList(BuildContext context) {
     return FloatingActionButton(
       backgroundColor: const Color(0xFF144771),
-      child: Icon(fabIcon),
+      child: Icon(floatingIcon),
       onPressed: () {
         if (!isBottomSheetShown) {
           scaffoldkey.currentState?.showBottomSheet(
@@ -273,11 +266,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             },
           );
           isBottomSheetShown = true;
-          fabIcon = Icons.arrow_drop_down_rounded;
+          floatingIcon = Icons.arrow_drop_down_rounded;
         } else {
           Navigator.of(context).maybePop();
           isBottomSheetShown = false;
-          fabIcon = Icons.arrow_drop_up_rounded;
+          floatingIcon = Icons.arrow_drop_up_rounded;
         }
         setState(() {});
       },
