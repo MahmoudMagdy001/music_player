@@ -15,30 +15,24 @@ class MediaMetaDataWith extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(5),
       color: Colors.black,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                artist,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 17,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            artist,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

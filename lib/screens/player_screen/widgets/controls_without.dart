@@ -22,14 +22,14 @@ class ControlsWith extends StatelessWidget {
             final playing = playerState?.playing;
             if (!(playing ?? false)) {
               return IconButton(
-                iconSize: 30,
+                iconSize: 40,
                 color: Colors.white,
                 onPressed: audioPlayer.play,
                 icon: const Icon(Icons.play_arrow_rounded),
               );
             } else if (processingState != ProcessingState.completed) {
               return IconButton(
-                iconSize: 30,
+                iconSize: 40,
                 color: Colors.white,
                 onPressed: audioPlayer.pause,
                 icon: const Icon(
@@ -39,7 +39,7 @@ class ControlsWith extends StatelessWidget {
             }
             return const Icon(
               Icons.play_arrow_rounded,
-              size: 30,
+              size: 40,
               color: Colors.white,
             );
           },

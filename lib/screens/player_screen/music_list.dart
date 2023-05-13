@@ -102,7 +102,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         Uri.parse('asset:///assets/audio/Ghasb-Anny.mp3'),
         tag: MediaItem(
           id: '7',
-          title: 'MUSliM & Zap Tharwat Ft. Sary Hany - Ghasb Anny ',
+          title: 'MUSliM & Zap Tharwat - Ghasb Anny ',
           artist: 'MUSliM & Zap Tharwat',
           artUri: Uri.parse('https://i.ytimg.com/vi/M4g-21W_ey8/default.jpg'),
         ),
@@ -205,46 +205,49 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                             .title
                             .toLowerCase()
                             .contains(_searchQuery.toLowerCase()));
-                    return Stack(
+                    return Column(
                       children: [
-                        ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: filteredSequence.length,
-                          itemBuilder: (context, index) {
-                            final metadata = filteredSequence
-                                .elementAt(index)
-                                .tag as MediaItem;
-                            return ListTile(
-                              key: ValueKey(metadata.id),
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(metadata.artUri.toString()),
-                              ),
-                              title: Text(
-                                metadata.title,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              subtitle: Text(
-                                metadata.artist ?? '',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              onTap: () async {
-                                await _audioPlayer.seek(Duration.zero,
-                                    index: index);
-                                _audioPlayer.play();
+                        Expanded(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: filteredSequence.length,
+                            itemBuilder: (context, index) {
+                              final metadata = filteredSequence
+                                  .elementAt(index)
+                                  .tag as MediaItem;
+                              return ListTile(
+                                key: ValueKey(metadata.id),
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(metadata.artUri.toString()),
+                                ),
+                                title: Text(
+                                  metadata.title,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                subtitle: Text(
+                                  metadata.artist ?? '',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                onTap: () async {
+                                  await _audioPlayer.seek(Duration.zero,
+                                      index: index);
+                                  _audioPlayer.play();
 
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PlayerScreen(
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => PlayerScreen(
                                         audioPlayer: _audioPlayer,
-                                        positionDataStream:
-                                            _positionDataStream),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                        positionDataStream: _positionDataStream,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
+                        const SizedBox(height: 10),
                         Positioned(
                           left: 0,
                           right: 0,
@@ -254,8 +257,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => PlayerScreen(
-                                      audioPlayer: _audioPlayer,
-                                      positionDataStream: _positionDataStream),
+                                    audioPlayer: _audioPlayer,
+                                    positionDataStream: _positionDataStream,
+                                  ),
                                 ),
                               );
                             },

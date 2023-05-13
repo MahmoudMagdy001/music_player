@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,39 +52,6 @@ class MyDrawer extends StatelessWidget {
                     ),
             ),
           ),
-          ListTile(
-            leading: const Icon(
-              Icons.settings_outlined,
-              color: Colors.white,
-            ),
-            title: const Text(
-              'Account Settings',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            onTap: () {
-              // Add navigation code here
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.info_outline,
-              color: Colors.white,
-            ),
-            title: const Text(
-              'Help',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            onTap: () {
-              // Add navigation code here
-            },
-          ),
-          const SizedBox(height: 10),
-          const Divider(color: Colors.white),
-          const SizedBox(height: 10),
           ListTile(
             leading: const Icon(
               Icons.logout_outlined,
