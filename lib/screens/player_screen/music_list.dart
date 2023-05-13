@@ -138,7 +138,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldkey,
-      // floatingActionButton: musicList(context),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -331,108 +330,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  FloatingActionButton musicList(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: const Color(0xFF144771),
-      child: Icon(floatingIcon),
-      onPressed: () {
-        if (!isBottomSheetShown) {
-          scaffoldkey.currentState?.showBottomSheet(
-            backgroundColor: const Color(0xFF144771),
-            elevation: 20.0,
-            (context) {
-              return Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      onChanged: (query) {
-                        setState(() {
-                          _searchQuery = query;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Search',
-                      ),
-                    ),
-                    StreamBuilder<SequenceState?>(
-                      stream: _audioPlayer.sequenceStateStream,
-                      builder: (context, snapshot) {
-                        final state = snapshot.data;
-                        if (state?.sequence.isEmpty ?? true) {
-                          return const SizedBox();
-                        }
-                        final filteredSequence = state!.sequence.where((item) =>
-                            item.tag is MediaItem &&
-                            (item.tag as MediaItem)
-                                .title
-                                .toLowerCase()
-                                .contains(_searchQuery.toLowerCase()));
-                        return BottomSheet(
-                          onClosing: () {},
-                          builder: (BuildContext context) {
-                            return Column(
-                              children: [
-                                SizedBox(
-                                  height: 400,
-                                  child: ListView.builder(
-                                    itemCount: filteredSequence.length,
-                                    itemBuilder: (context, index) {
-                                      final metadata = filteredSequence
-                                          .elementAt(index)
-                                          .tag as MediaItem;
-                                      return ListTile(
-                                        key: ValueKey(metadata
-                                            .id), // add a key to the ListTile
-                                        leading: CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              metadata.artUri.toString()),
-                                        ),
-                                        title: Text(metadata.title),
-                                        subtitle: Text(metadata.artist ?? ''),
-                                        onTap: () async {
-                                          await _audioPlayer.seek(Duration.zero,
-                                              index: index);
-                                          _audioPlayer.play();
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PlayerScreen(
-                                                      audioPlayer: _audioPlayer,
-                                                      positionDataStream:
-                                                          _positionDataStream),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-          isBottomSheetShown = true;
-          floatingIcon = Icons.arrow_drop_down_rounded;
-        } else {
-          Navigator.of(context).maybePop();
-          isBottomSheetShown = false;
-          floatingIcon = Icons.arrow_drop_up_rounded;
-        }
-        setState(() {});
-      },
     );
   }
 }
