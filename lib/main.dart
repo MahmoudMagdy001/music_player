@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:music_player/google_signin.dart';
+import 'package:music_player/screens/auth_screen/auth_screen.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
-import 'screens/player_screen/audio_player_screen.dart';
 
 Future<void> main() async {
   await JustAudioBackground.init(
@@ -22,10 +24,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const AudioPlayerScreen(),
+    return ChangeNotifierProvider(
+      create: (context) => GoogleSignInProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: const AuthModule(),
+      ),
     );
   }
 }
