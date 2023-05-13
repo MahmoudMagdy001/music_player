@@ -1,18 +1,17 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:music_player/screens/auth_screen/widgets/custom_text_form_field.dart';
 import 'package:music_player/screens/auth_screen/auth_screen.dart';
 import 'package:music_player/screens/player_screen/data/position_data.dart';
+import 'package:music_player/screens/player_screen/widgets/player_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../google_signin.dart';
-import 'widgets/media_data.dart';
-import 'widgets/controls.dart';
+import '../auth_screen/data/google_signin.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({Key? key}) : super(key: key);
@@ -27,6 +26,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   IconData floatingIcon = Icons.arrow_drop_up_rounded;
   final user = FirebaseAuth.instance.currentUser;
   final auth = FirebaseAuth.instance;
+  String _searchQuery = '';
+  TextEditingController search = TextEditingController();
 
   final playlist = ConcatenatingAudioSource(
     children: [
@@ -137,12 +138,18 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldkey,
-      floatingActionButton: musicList(context),
+      // floatingActionButton: musicList(context),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
+        title: const Text(
+          'Music List',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       drawer: Drawer(
         backgroundColor: const Color(0xFF144771),
@@ -237,8 +244,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(20),
-        height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -250,49 +255,80 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            StreamBuilder<SequenceState?>(
-              stream: _audioPlayer.sequenceStateStream,
-              builder: (context, snapshot) {
-                final state = snapshot.data;
-                if (state?.sequence.isEmpty ?? true) {
-                  return const SizedBox();
-                }
-                final metadata = state!.currentSource!.tag as MediaItem;
-                return MediaMetaData(
-                  imageUrl: metadata.artUri.toString(),
-                  title: metadata.title,
-                  artist: metadata.artist ?? '',
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            StreamBuilder<PositionData>(
-              stream: _positionDataStream,
-              builder: (context, snapshot) {
-                final positionData = snapshot.data;
-                return ProgressBar(
-                  barHeight: 8,
-                  baseBarColor: Colors.grey[600],
-                  bufferedBarColor: Colors.grey,
-                  progressBarColor: Colors.red,
-                  thumbColor: Colors.red,
-                  timeLabelTextStyle: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  progress: positionData?.position ?? Duration.zero,
-                  buffered: positionData?.bufferedPosition ?? Duration.zero,
-                  total: positionData?.duration ?? Duration.zero,
-                  onSeek: _audioPlayer.seek,
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            Controls(audioPlayer: _audioPlayer),
-          ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: customTextFormField(
+                  type: TextInputType.text,
+                  validator: (value) {
+                    return null;
+                  },
+                  controller: search,
+                  onChange: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                    });
+                  },
+                  label: 'Search',
+                  prefix: Icons.search_rounded,
+                ),
+              ),
+              Expanded(
+                child: StreamBuilder<SequenceState?>(
+                  stream: _audioPlayer.sequenceStateStream,
+                  builder: (context, snapshot) {
+                    final state = snapshot.data;
+                    if (state?.sequence.isEmpty ?? true) {
+                      return const SizedBox();
+                    }
+                    final filteredSequence = state!.sequence.where((item) =>
+                        item.tag is MediaItem &&
+                        (item.tag as MediaItem)
+                            .title
+                            .toLowerCase()
+                            .contains(_searchQuery.toLowerCase()));
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: filteredSequence.length,
+                      itemBuilder: (context, index) {
+                        final metadata =
+                            filteredSequence.elementAt(index).tag as MediaItem;
+                        return ListTile(
+                          key: ValueKey(metadata.id),
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(metadata.artUri.toString()),
+                          ),
+                          title: Text(
+                            metadata.title,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          subtitle: Text(
+                            metadata.artist ?? '',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          onTap: () async {
+                            await _audioPlayer.seek(Duration.zero,
+                                index: index);
+                            _audioPlayer.play();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PlayerScreen(
+                                    audioPlayer: _audioPlayer,
+                                    positionDataStream: _positionDataStream),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -314,6 +350,16 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    TextField(
+                      onChanged: (query) {
+                        setState(() {
+                          _searchQuery = query;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                      ),
+                    ),
                     StreamBuilder<SequenceState?>(
                       stream: _audioPlayer.sequenceStateStream,
                       builder: (context, snapshot) {
@@ -321,31 +367,53 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                         if (state?.sequence.isEmpty ?? true) {
                           return const SizedBox();
                         }
+                        final filteredSequence = state!.sequence.where((item) =>
+                            item.tag is MediaItem &&
+                            (item.tag as MediaItem)
+                                .title
+                                .toLowerCase()
+                                .contains(_searchQuery.toLowerCase()));
                         return BottomSheet(
                           onClosing: () {},
                           builder: (BuildContext context) {
-                            return SizedBox(
-                              height: 300,
-                              child: ListView.builder(
-                                itemCount: state!.sequence.length,
-                                itemBuilder: (context, index) {
-                                  final metadata =
-                                      state.sequence[index].tag as MediaItem;
-                                  return ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          metadata.artUri.toString()),
-                                    ),
-                                    title: Text(metadata.title),
-                                    subtitle: Text(metadata.artist ?? ''),
-                                    onTap: () async {
-                                      await _audioPlayer.seek(Duration.zero,
-                                          index: index);
-                                      _audioPlayer.play();
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 400,
+                                  child: ListView.builder(
+                                    itemCount: filteredSequence.length,
+                                    itemBuilder: (context, index) {
+                                      final metadata = filteredSequence
+                                          .elementAt(index)
+                                          .tag as MediaItem;
+                                      return ListTile(
+                                        key: ValueKey(metadata
+                                            .id), // add a key to the ListTile
+                                        leading: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              metadata.artUri.toString()),
+                                        ),
+                                        title: Text(metadata.title),
+                                        subtitle: Text(metadata.artist ?? ''),
+                                        onTap: () async {
+                                          await _audioPlayer.seek(Duration.zero,
+                                              index: index);
+                                          _audioPlayer.play();
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PlayerScreen(
+                                                      audioPlayer: _audioPlayer,
+                                                      positionDataStream:
+                                                          _positionDataStream),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
-                                  );
-                                },
-                              ),
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         );

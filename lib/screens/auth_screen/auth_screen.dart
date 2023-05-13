@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:music_player/screens/player_screen/audio_player_screen.dart';
+import 'package:music_player/screens/player_screen/music_list.dart';
 import 'package:provider/provider.dart';
 
-import '../../custom_button.dart';
-import '../../custom_text_form_field.dart';
-import '../../google_signin.dart';
+import 'widgets/custom_button.dart';
+import 'widgets/custom_text_form_field.dart';
+import 'data/google_signin.dart';
 
 class AuthModule extends StatefulWidget {
   const AuthModule({super.key});
@@ -148,17 +148,15 @@ class _AuthModule extends State<AuthModule>
                       ),
                       SizedBox(height: 20),
                       Row(
-                        // ignore: prefer_const_literals_to_create_immutables
-                        children: [
-                          const Expanded(
+                        children: const [
+                          Expanded(
                             child: Divider(
                               color: Colors.white,
                               thickness: 0.5,
                             ),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
                               'or',
                               style: TextStyle(
@@ -168,7 +166,7 @@ class _AuthModule extends State<AuthModule>
                               ),
                             ),
                           ),
-                          const Expanded(
+                          Expanded(
                             child: Divider(
                               color: Colors.white,
                               thickness: 0.5,

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:music_player/google_signin.dart';
+import 'package:music_player/screens/auth_screen/data/google_signin.dart';
 import 'package:music_player/screens/auth_screen/auth_screen.dart';
 import 'package:provider/provider.dart';
 
