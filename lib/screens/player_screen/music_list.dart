@@ -6,7 +6,9 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:music_player/screens/auth_screen/widgets/custom_text_form_field.dart';
 import 'package:music_player/screens/player_screen/data/position_data.dart';
+import 'package:music_player/screens/player_screen/widgets/controls_without.dart';
 import 'package:music_player/screens/player_screen/widgets/custo_drawer.dart';
+import 'package:music_player/screens/player_screen/widgets/media_data_withoutimage.dart';
 import 'package:music_player/screens/player_screen/widgets/player_screen.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -203,40 +205,91 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                             .title
                             .toLowerCase()
                             .contains(_searchQuery.toLowerCase()));
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: filteredSequence.length,
-                      itemBuilder: (context, index) {
-                        final metadata =
-                            filteredSequence.elementAt(index).tag as MediaItem;
-                        return ListTile(
-                          key: ValueKey(metadata.id),
-                          leading: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(metadata.artUri.toString()),
-                          ),
-                          title: Text(
-                            metadata.title,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          subtitle: Text(
-                            metadata.artist ?? '',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          onTap: () async {
-                            await _audioPlayer.seek(Duration.zero,
-                                index: index);
-                            _audioPlayer.play();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PlayerScreen(
-                                    audioPlayer: _audioPlayer,
-                                    positionDataStream: _positionDataStream),
+                    return Stack(
+                      children: [
+                        ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: filteredSequence.length,
+                          itemBuilder: (context, index) {
+                            final metadata = filteredSequence
+                                .elementAt(index)
+                                .tag as MediaItem;
+                            return ListTile(
+                              key: ValueKey(metadata.id),
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(metadata.artUri.toString()),
                               ),
+                              title: Text(
+                                metadata.title,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              subtitle: Text(
+                                metadata.artist ?? '',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              onTap: () async {
+                                await _audioPlayer.seek(Duration.zero,
+                                    index: index);
+                                _audioPlayer.play();
+
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => PlayerScreen(
+                                        audioPlayer: _audioPlayer,
+                                        positionDataStream:
+                                            _positionDataStream),
+                                  ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PlayerScreen(
+                                      audioPlayer: _audioPlayer,
+                                      positionDataStream: _positionDataStream),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 50,
+                              color: Colors.black,
+                              child: Center(
+                                child: Row(
+                                  children: [
+                                    ControlsWith(audioPlayer: _audioPlayer),
+                                    const SizedBox(width: 20),
+                                    StreamBuilder<SequenceState?>(
+                                      stream: _audioPlayer.sequenceStateStream,
+                                      builder: (context, snapshot) {
+                                        final state = snapshot.data;
+                                        if (state?.sequence.isEmpty ?? true) {
+                                          return const SizedBox();
+                                        }
+                                        final metadata = state!
+                                            .currentSource!.tag as MediaItem;
+                                        return MediaMetaDataWith(
+                                          // imageUrl: metadata.artUri.toString(),
+                                          title: metadata.title,
+                                          artist: metadata.artist ?? '',
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
