@@ -151,11 +151,20 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
-        title: const Text(
-          'Music List',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Music List',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            Image.asset(
+              'assets/logo.png',
+              scale: 100,
+            ),
+          ],
         ),
       ),
       drawer: MyDrawer(user: user, auth: auth),

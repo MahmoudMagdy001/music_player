@@ -30,6 +30,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
         backgroundColor: Colors.transparent,
         // foregroundColor: Colors.white,
         elevation: 0.0,
+        actions: [
+          Image.asset(
+            'assets/logo.png',
+            scale: 100,
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,
