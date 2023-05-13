@@ -18,7 +18,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF144771),
+      backgroundColor: const Color.fromARGB(255, 15, 54, 90),
       elevation: 100,
       child: ListView(
         physics: const BouncingScrollPhysics(),

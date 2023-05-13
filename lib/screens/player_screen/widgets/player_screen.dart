@@ -1,4 +1,3 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +39,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
             end: Alignment.bottomCenter,
             colors: [
               Color(0xFF144771),
-              Color(0xFF071A2C),
+              Color.fromARGB(255, 10, 35, 59),
             ],
           ),
         ),

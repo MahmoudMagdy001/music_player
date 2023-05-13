@@ -54,7 +54,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           id: '2',
           title: 'MUSliM - Mesh Nadman',
           artist: 'MUSliM',
-          artUri: Uri.parse('https://i.ytimg.com/vi/VH9oYeAtvN8/hqdefault.jpg'),
+          artUri: Uri.parse('https://i.ytimg.com/vi/RBOhI_2I2Qo/default.jpg'),
         ),
       ),
       AudioSource.uri(
@@ -94,6 +94,15 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           artist: 'MUSliM',
           artUri: Uri.parse(
               'https://artwork.anghcdn.co/webp/?id=144816215&size=296'),
+        ),
+      ),
+      AudioSource.uri(
+        Uri.parse('asset:///assets/audio/Ghasb-Anny.mp3'),
+        tag: MediaItem(
+          id: '7',
+          title: 'MUSliM & Zap Tharwat Ft. Sary Hany - Ghasb Anny ',
+          artist: 'MUSliM & Zap Tharwat',
+          artUri: Uri.parse('https://i.ytimg.com/vi/M4g-21W_ey8/default.jpg'),
         ),
       ),
     ],
@@ -156,7 +165,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             end: Alignment.bottomCenter,
             colors: [
               Color(0xFF144771),
-              Color(0xFF071A2C),
+              Color.fromARGB(255, 10, 35, 59),
             ],
           ),
         ),
