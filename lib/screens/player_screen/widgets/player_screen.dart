@@ -28,7 +28,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        // foregroundColor: Colors.white,
         elevation: 0.0,
         actions: [
           Image.asset(

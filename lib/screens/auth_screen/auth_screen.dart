@@ -45,6 +45,8 @@ class _AuthModule extends State<AuthModule>
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
+  bool loading = false;
+
   late String yourName;
   late String email;
   late String password;
@@ -103,49 +105,59 @@ class _AuthModule extends State<AuthModule>
                             .copyWith(color: Colors.white),
                       ),
                       SizedBox(height: 15),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              width: 0.7,
-                              color: Colors.white,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                          ),
-                          elevation: 0.0,
-                          backgroundColor: Colors.transparent,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Logo(Logos.google),
-                            const SizedBox(width: 15),
-                            const Text(
-                              'Sign up with Google',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w500,
+                      loading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(
+                                    width: 0.7,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                elevation: 0.0,
+                                backgroundColor: Colors.transparent,
                               ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Logo(Logos.google),
+                                  const SizedBox(width: 15),
+                                  const Text(
+                                    'Sign up with Google',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onPressed: () async {
+                                final provider =
+                                    Provider.of<GoogleSignInProvider>(context,
+                                        listen: false);
+                                setState(() {
+                                  loading = true;
+                                });
+                                await provider.googleLogin();
+                                setState(() {
+                                  loading = false;
+                                });
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => AudioPlayerScreen(),
+                                  ),
+                                );
+                                // navigatePushReplacementTo(context, const HomeModel());
+                              },
                             ),
-                          ],
-                        ),
-                        onPressed: () async {
-                          final provider = Provider.of<GoogleSignInProvider>(
-                              context,
-                              listen: false);
-                          await provider.googleLogin();
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => AudioPlayerScreen(),
-                            ),
-                          );
-                          // navigatePushReplacementTo(context, const HomeModel());
-                        },
-                      ),
                       SizedBox(height: 20),
                       Row(
                         children: const [
@@ -265,17 +277,28 @@ class _AuthModule extends State<AuthModule>
                         style: TextStyle(color: Colors.white),
                       ),
                       const SizedBox(height: 30),
-                      CustomButton(
-                        label: 'SIGNUP',
-                        onPressed: () async {
-                          if (formkey.currentState!.validate()) {
-                            _signUp();
-                            nameControllerSignup.text = '';
-                            passwordControllerSignup.text = '';
-                            emailControllerSignup.text = '';
-                          }
-                        },
-                      ),
+                      loading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : CustomButton(
+                              label: 'SIGNUP',
+                              onPressed: () async {
+                                if (formkey.currentState!.validate()) {
+                                  setState(() {
+                                    loading = true;
+                                  });
+                                  _signUp();
+                                  setState(() {
+                                    loading = false;
+                                  });
+
+                                  nameControllerSignup.text = '';
+                                  passwordControllerSignup.text = '';
+                                  emailControllerSignup.text = '';
+                                }
+                              },
+                            ),
                     ],
                   ),
                 ),
@@ -324,7 +347,13 @@ class _AuthModule extends State<AuthModule>
                           final provider = Provider.of<GoogleSignInProvider>(
                               context,
                               listen: false);
+                          setState(() {
+                            loading = true;
+                          });
                           await provider.googleLogin();
+                          setState(() {
+                            loading = false;
+                          });
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => AudioPlayerScreen(),
@@ -429,31 +458,42 @@ class _AuthModule extends State<AuthModule>
                         style: TextStyle(color: Colors.white),
                       ),
                       SizedBox(height: 30),
-                      CustomButton(
-                        label: 'LOG IN',
-                        onPressed: () async {
-                          if (formkeylogin.currentState!.validate()) {
-                            try {
-                              await FirebaseAuth.instance
-                                  .signInWithEmailAndPassword(
-                                      email: emaillogin,
-                                      password: passwordlogin);
+                      loading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : CustomButton(
+                              label: 'LOG IN',
+                              onPressed: () async {
+                                if (formkeylogin.currentState!.validate()) {
+                                  try {
+                                    setState(() {
+                                      loading = true;
+                                    });
+                                    await FirebaseAuth.instance
+                                        .signInWithEmailAndPassword(
+                                            email: emaillogin,
+                                            password: passwordlogin);
+                                    setState(() {
+                                      loading = false;
+                                    });
 
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => AudioPlayerScreen(),
-                                ),
-                              );
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AudioPlayerScreen(),
+                                      ),
+                                    );
 
-                              // navigatePushReplacementTo(context, HomeModel());
-                            } catch (error) {
-                              if (kDebugMode) {
-                                print(error);
-                              }
-                            }
-                          }
-                        },
-                      ),
+                                    // navigatePushReplacementTo(context, HomeModel());
+                                  } catch (error) {
+                                    if (kDebugMode) {
+                                      print(error);
+                                    }
+                                  }
+                                }
+                              },
+                            ),
                     ],
                   ),
                 ),

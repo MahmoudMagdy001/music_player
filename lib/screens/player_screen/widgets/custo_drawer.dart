@@ -65,9 +65,9 @@ class MyDrawer extends StatelessWidget {
             ),
             onTap: () async {
               await auth.signOut();
-              final provider =
-                  Provider.of<GoogleSignInProvider>(context, listen: false);
-              await provider.logout();
+
+              await Provider.of<GoogleSignInProvider>(context, listen: false)
+                  .logout();
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => const AuthModule(),
