@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:music_player/check.dart';
 import 'package:music_player/screens/auth_screen/data/google_signin.dart';
-import 'package:music_player/screens/auth_screen/auth_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: const AuthModule(),
+        home: const SplashPage(),
       ),
     );
   }
