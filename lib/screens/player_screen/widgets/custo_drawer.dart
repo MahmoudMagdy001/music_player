@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,19 +64,31 @@ class MyDrawer extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            onTap: () async {
-              await auth.signOut();
-
-              await Provider.of<GoogleSignInProvider>(context, listen: false)
-                  .logout();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const AuthModule(),
-                ),
-              );
+            onTap: () {
+              logOut(context);
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> logOut(BuildContext context) async {
+    try {
+      await Future.wait(
+        [
+          auth.signOut(),
+          Provider.of<GoogleSignInProvider>(context, listen: false).logout(),
+        ],
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const AuthModule(),
       ),
     );
   }

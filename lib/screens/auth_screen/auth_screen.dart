@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sort_child_properties_last, library_private_types_in_public_api, unused_local_variable, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -31,6 +31,11 @@ class _AuthModule extends State<AuthModule>
   @override
   void dispose() {
     _tabController.dispose();
+    emailController.dispose();
+    emailControllerSignup.dispose();
+    passwordController.dispose();
+    passwordControllerSignup.dispose();
+    nameControllerSignup.dispose();
     super.dispose();
   }
 
@@ -38,21 +43,14 @@ class _AuthModule extends State<AuthModule>
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   GlobalKey<FormState> formkeylogin = GlobalKey<FormState>();
 
-  var emailControllerSignup = TextEditingController();
-  var passwordControllerSignup = TextEditingController();
-  var nameControllerSignup = TextEditingController();
+  TextEditingController emailControllerSignup = TextEditingController();
+  TextEditingController passwordControllerSignup = TextEditingController();
+  TextEditingController nameControllerSignup = TextEditingController();
 
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   bool loading = false;
-
-  late String yourName;
-  late String email;
-  late String password;
-
-  late String emaillogin;
-  late String passwordlogin;
 
   bool isPasswordSignup = false;
   bool isPasswordLogin = false;
@@ -60,7 +58,7 @@ class _AuthModule extends State<AuthModule>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF144771),
+        backgroundColor: const Color(0xFF144771),
         title: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
@@ -90,13 +88,13 @@ class _AuthModule extends State<AuthModule>
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Form(
                   key: formkey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       Text(
                         'Create your account.',
                         style: Theme.of(context)
@@ -104,16 +102,16 @@ class _AuthModule extends State<AuthModule>
                             .headlineSmall!
                             .copyWith(color: Colors.white),
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       loading
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  side: BorderSide(
+                                  side: const BorderSide(
                                     width: 0.7,
                                     color: Colors.white,
                                   ),
@@ -152,13 +150,13 @@ class _AuthModule extends State<AuthModule>
                                 });
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                    builder: (context) => AudioPlayerScreen(),
+                                    builder: (context) =>
+                                        const AudioPlayerScreen(),
                                   ),
                                 );
-                                // navigatePushReplacementTo(context, const HomeModel());
                               },
                             ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         children: const [
                           Expanded(
@@ -198,9 +196,6 @@ class _AuthModule extends State<AuthModule>
                         controller: nameControllerSignup,
                         label: 'Your name',
                         prefix: Icons.person,
-                        onChange: (value) {
-                          yourName = value;
-                        },
                       ),
                       const SizedBox(height: 20.0),
                       customTextFormField(
@@ -214,12 +209,6 @@ class _AuthModule extends State<AuthModule>
                         controller: emailControllerSignup,
                         label: 'E-Mail',
                         prefix: Icons.email,
-                        onChange: (value) {
-                          email = value;
-                          if (kDebugMode) {
-                            print(email);
-                          }
-                        },
                       ),
                       const SizedBox(height: 20.0),
                       TextFormField(
@@ -231,12 +220,6 @@ class _AuthModule extends State<AuthModule>
                             print(value);
                           }
                         },
-                        onChanged: (value) {
-                          password = value;
-                          if (kDebugMode) {
-                            print(password);
-                          }
-                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please ENTRE your password';
@@ -245,7 +228,7 @@ class _AuthModule extends State<AuthModule>
                         },
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           prefixIcon: const Icon(
                             Icons.lock,
                             color: Colors.white,
@@ -262,28 +245,28 @@ class _AuthModule extends State<AuthModule>
                             },
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                       const SizedBox(height: 30),
                       loading
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
                           : CustomButton(
                               label: 'SIGNUP',
-                              onPressed: () async {
+                              onPressed: () {
                                 if (formkey.currentState!.validate()) {
                                   setState(() {
                                     loading = true;
@@ -292,10 +275,7 @@ class _AuthModule extends State<AuthModule>
                                   setState(() {
                                     loading = false;
                                   });
-
-                                  nameControllerSignup.text = '';
-                                  passwordControllerSignup.text = '';
-                                  emailControllerSignup.text = '';
+                                  _clearTexts();
                                 }
                               },
                             ),
@@ -307,22 +287,23 @@ class _AuthModule extends State<AuthModule>
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 child: Form(
                   key: formkeylogin,
                   child: Column(
                     children: [
-                      SizedBox(height: 15),
-                      Text(
+                      const SizedBox(height: 15),
+                      const Text(
                         'Log in to your account.',
                         style: TextStyle(fontSize: 22.0, color: Colors.white),
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(width: 0.7, color: Colors.white),
+                              side: const BorderSide(
+                                  width: 0.7, color: Colors.white),
                             ),
                             padding: const EdgeInsets.symmetric(
                               vertical: 8.0,
@@ -356,12 +337,12 @@ class _AuthModule extends State<AuthModule>
                           });
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => AudioPlayerScreen(),
+                              builder: (context) => const AudioPlayerScreen(),
                             ),
                           );
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         children: const [
                           Expanded(
@@ -389,7 +370,7 @@ class _AuthModule extends State<AuthModule>
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       customTextFormField(
                         type: TextInputType.emailAddress,
                         validator: (value) {
@@ -401,9 +382,6 @@ class _AuthModule extends State<AuthModule>
                         controller: emailController,
                         label: 'E-mail',
                         prefix: Icons.email,
-                        onChange: (value) {
-                          emaillogin = value;
-                        },
                       ),
                       const SizedBox(height: 15.0),
                       TextFormField(
@@ -415,9 +393,6 @@ class _AuthModule extends State<AuthModule>
                             print(value);
                           }
                         },
-                        onChanged: (value) {
-                          passwordlogin = value;
-                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Password must not be empty';
@@ -426,7 +401,7 @@ class _AuthModule extends State<AuthModule>
                         },
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(color: Colors.white),
                           prefixIcon: const Icon(
                             Icons.lock,
                             color: Colors.white,
@@ -443,54 +418,30 @@ class _AuthModule extends State<AuthModule>
                             },
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       loading
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
                           : CustomButton(
                               label: 'LOG IN',
-                              onPressed: () async {
+                              onPressed: () {
                                 if (formkeylogin.currentState!.validate()) {
-                                  try {
-                                    setState(() {
-                                      loading = true;
-                                    });
-                                    await FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
-                                            email: emaillogin,
-                                            password: passwordlogin);
-                                    setState(() {
-                                      loading = false;
-                                    });
-
-                                    Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AudioPlayerScreen(),
-                                      ),
-                                    );
-
-                                    // navigatePushReplacementTo(context, HomeModel());
-                                  } catch (error) {
-                                    if (kDebugMode) {
-                                      print(error);
-                                    }
-                                  }
+                                  _login(context);
                                 }
                               },
                             ),
@@ -505,11 +456,51 @@ class _AuthModule extends State<AuthModule>
     );
   }
 
-  void _signUp() async {
-    try {
-      FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+  void _clearTexts() {
+    nameControllerSignup.clear();
+    passwordControllerSignup.clear();
+    emailControllerSignup.clear();
+  }
 
+  Future<void> _login(BuildContext context) async {
+    try {
+      setState(() {
+        loading = true;
+      });
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      setState(() {
+        loading = false;
+      });
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const AudioPlayerScreen(),
+        ),
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    }
+  }
+
+  Future<void> _signUp() async {
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: emailControllerSignup.text.trim(),
+        password: passwordControllerSignup.text.trim(),
+      )
+          .then(
+        (value) {
+          value.user!.updateDisplayName(
+            nameControllerSignup.text.trim(),
+          );
+        },
+      );
       _showAlertDialogSignup(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -517,11 +508,11 @@ class _AuthModule extends State<AuthModule>
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Sign up"),
-              content: Text('The password provided is too weak.'),
+              title: const Text("Sign up"),
+              content: const Text('The password provided is too weak.'),
               actions: [
                 TextButton(
-                  child: Text("OK"),
+                  child: const Text("OK"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -530,17 +521,16 @@ class _AuthModule extends State<AuthModule>
             );
           },
         );
-        // print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Sign up"),
-              content: Text('The account already exists for that email.'),
+              title: const Text("Sign up"),
+              content: const Text('The account already exists for that email.'),
               actions: [
                 TextButton(
-                  child: Text("OK"),
+                  child: const Text("OK"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -549,7 +539,6 @@ class _AuthModule extends State<AuthModule>
             );
           },
         );
-        // print('The account already exists for that email.');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -563,11 +552,11 @@ class _AuthModule extends State<AuthModule>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Sign up"),
-          content: Text("Sign up has been Successfully"),
+          title: const Text("Sign up"),
+          content: const Text("Sign up has been Successfully"),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
