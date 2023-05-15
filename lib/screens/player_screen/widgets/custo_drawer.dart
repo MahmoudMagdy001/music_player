@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../auth_screen/auth_screen.dart';
 import '../../auth_screen/data/google_signin.dart';
@@ -78,7 +77,7 @@ class MyDrawer extends StatelessWidget {
       await Future.wait(
         [
           auth.signOut(),
-          Provider.of<GoogleSignInProvider>(context, listen: false).logout(),
+          logoutfromgoogle(),
         ],
       );
     } catch (e) {

@@ -1,37 +1,40 @@
 // ignore_for_file: avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class GoogleSignInProvider extends ChangeNotifier {
-  final googleSignIn = GoogleSignIn();
-  GoogleSignInAccount? _user;
-  GoogleSignInAccount get user => _user!;
+final GoogleSignIn _googleSignIn = GoogleSignIn();
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future googleLogin() async {
-    try {
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return;
-      _user = googleUser;
+Future<UserCredential?> handleSignIn() async {
+  try {
+    // Trigger the Google authentication flow
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      final googleAuth = await googleUser.authentication;
+    // Obtain the Google Authentication object
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+    // Create a new credential using the Google ID token and access token
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+    // Sign in to Firebase with the credential
+    final UserCredential userCredential =
+        await _auth.signInWithCredential(credential);
 
-      notifyListeners();
-    } catch (e) {
-      print(e.toString());
-    }
+    // Return the user credentials
+    return userCredential;
+  } catch (error) {
+    // Handle any errors that occur during the sign-in process
+    print('Error signing in with Google: $error');
+    return null;
   }
+}
 
-  Future logout() async {
-    await googleSignIn.disconnect();
-    FirebaseAuth.instance.signOut();
-  }
+Future logoutfromgoogle() async {
+  await _googleSignIn.disconnect();
+  FirebaseAuth.instance.signOut();
 }

@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/screens/auth_screen/auth_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'screens/player_screen/music_list.dart';
 
@@ -20,7 +21,21 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _redirect();
+    _checkInternetConnection();
+  }
+
+  Future<void> _checkInternetConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _connectionStatus = 'No Internet';
+      });
+    } else {
+      setState(() {
+        _connectionStatus = 'Connected';
+      });
+      _redirect();
+    }
   }
 
   Future<void> _redirect() async {

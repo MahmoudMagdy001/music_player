@@ -4,12 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:music_player/screens/auth_screen/data/google_signin.dart';
 import 'package:music_player/screens/player_screen/music_list.dart';
-import 'package:provider/provider.dart';
 
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text_form_field.dart';
-import 'data/google_signin.dart';
 
 class AuthModule extends StatefulWidget {
   const AuthModule({super.key});
@@ -105,7 +104,10 @@ class _AuthModule extends State<AuthModule>
                       const SizedBox(height: 15),
                       loading
                           ? const Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 13,
+                              ),
                             )
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -138,22 +140,24 @@ class _AuthModule extends State<AuthModule>
                                 ],
                               ),
                               onPressed: () async {
-                                final provider =
-                                    Provider.of<GoogleSignInProvider>(context,
-                                        listen: false);
                                 setState(() {
                                   loading = true;
                                 });
-                                await provider.googleLogin();
-                                setState(() {
-                                  loading = false;
-                                });
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AudioPlayerScreen(),
-                                  ),
-                                );
+
+                                UserCredential? userCredential =
+                                    await handleSignIn();
+                                if (userCredential != null) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AudioPlayerScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                }
                               },
                             ),
                       const SizedBox(height: 20),
@@ -262,7 +266,10 @@ class _AuthModule extends State<AuthModule>
                       const SizedBox(height: 30),
                       loading
                           ? const Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 13,
+                              ),
                             )
                           : CustomButton(
                               label: 'SIGNUP',
@@ -298,50 +305,60 @@ class _AuthModule extends State<AuthModule>
                         style: TextStyle(fontSize: 22.0, color: Colors.white),
                       ),
                       const SizedBox(height: 15),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(
-                                  width: 0.7, color: Colors.white),
+                      loading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 13,
+                              ),
+                            )
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(
+                                        width: 0.7, color: Colors.white),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                  ),
+                                  elevation: 0.0,
+                                  backgroundColor: Colors.transparent),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Logo(Logos.google),
+                                  const SizedBox(width: 15),
+                                  const Text(
+                                    'Sign in with Google',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                              onPressed: () async {
+                                setState(() {
+                                  loading = true;
+                                });
+
+                                UserCredential? userCredential =
+                                    await handleSignIn();
+                                if (userCredential != null) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AudioPlayerScreen(),
+                                    ),
+                                  );
+                                } else {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                }
+                              },
                             ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8.0,
-                            ),
-                            elevation: 0.0,
-                            backgroundColor: Colors.transparent),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Logo(Logos.google),
-                            const SizedBox(width: 15),
-                            const Text(
-                              'Sign in with Google',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                        onPressed: () async {
-                          final provider = Provider.of<GoogleSignInProvider>(
-                              context,
-                              listen: false);
-                          setState(() {
-                            loading = true;
-                          });
-                          await provider.googleLogin();
-                          setState(() {
-                            loading = false;
-                          });
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const AudioPlayerScreen(),
-                            ),
-                          );
-                        },
-                      ),
                       const SizedBox(height: 20),
                       Row(
                         children: const [
@@ -435,7 +452,10 @@ class _AuthModule extends State<AuthModule>
                       const SizedBox(height: 30),
                       loading
                           ? const Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 13,
+                              ),
                             )
                           : CustomButton(
                               label: 'LOG IN',
