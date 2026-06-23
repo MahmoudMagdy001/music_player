@@ -4,5 +4,7 @@ import 'package:music_player/features/music/domain/repositories/music_repository
 
 void initRepositoryDependencies() {
   final getIt = GetIt.instance;
-  getIt.registerLazySingleton<MusicRepository>(() => MusicRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<MusicRepository>(
+    () => MusicRepositoryImpl(getIt(), getIt()),
+  );
 }

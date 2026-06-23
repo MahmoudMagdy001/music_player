@@ -19,7 +19,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -34,30 +33,52 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future<void> _initPlayerPlaylist(List<Song> songs) async {
+  Future<void> _initPlayerPlaylist(
+    List<Song> songs, {
+    bool force = false,
+  }) async {
     final player = getIt<AudioPlayer>();
-    if (player.sequence.isEmpty) {
-      final sources = songs.map((song) {
-        final uriStr = song.audioPath.startsWith('assets/')
-            ? 'asset:///${song.audioPath}'
-            : song.audioPath;
-        return AudioSource.uri(
-          Uri.parse(uriStr),
-          tag: MediaItem(
-            id: song.id,
-            title: song.title,
-            artist: song.artist,
-            artUri: Uri.parse(song.imageUrl),
-          ),
-        );
-      }).toList();
+
+    final currentIds =
+        player.sequence.map((s) => (s.tag as MediaItem).id).toList();
+    final newIds = songs.map((s) => s.id).toList();
+
+    var isIdentical = currentIds.length == newIds.length;
+    if (isIdentical) {
+      for (var i = 0; i < currentIds.length; i++) {
+        if (currentIds[i] != newIds[i]) {
+          isIdentical = false;
+          break;
+        }
+      }
+    }
+
+    if (player.sequence.isEmpty || !isIdentical || force) {
+      final sources = songs
+          .map(
+            (song) => AudioSource.uri(
+              Uri.parse(song.audioPath),
+              tag: MediaItem(
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                artUri: Uri.parse(song.imageUrl),
+              ),
+            ),
+          )
+          .toList();
       await player.setAudioSources(sources);
       await player.setLoopMode(LoopMode.all);
     }
   }
 
-  void _navigateToPlayer(BuildContext context, int index) async {
+  void _navigateToPlayer(
+    BuildContext context,
+    List<Song> songs,
+    int index,
+  ) async {
     final player = getIt<AudioPlayer>();
+    await _initPlayerPlaylist(songs);
     await player.seek(Duration.zero, index: index);
     unawaited(player.play());
 
@@ -100,9 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     labelText: context.l10n.searchPlaceholder,
                     prefixIcon: Icons.search_rounded,
                     onChanged: (val) {
-                      setState(() {
-                        _searchQuery = val;
-                      });
+                      context.read<MusicBloc>().add(SearchSongs(val));
                     },
                   ),
                 ),
@@ -110,11 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Content Body
                 Expanded(
                   child: BlocConsumer<MusicBloc, MusicState>(
-                    listener: (context, state) {
-                      if (state.status == MusicStatus.success) {
-                        unawaited(_initPlayerPlaylist(state.songs));
-                      }
-                    },
+                    listener: (context, state) {},
                     builder: (context, state) {
                       if (state.status == MusicStatus.loading) {
                         return const AppLoading();
@@ -127,18 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
 
-                      // Filter list
-                      final filteredSongs = state.songs
-                          .where(
-                            (song) =>
-                                song.title
-                                    .toLowerCase()
-                                    .contains(_searchQuery.toLowerCase()) ||
-                                song.artist
-                                    .toLowerCase()
-                                    .contains(_searchQuery.toLowerCase()),
-                          )
-                          .toList();
+                      final filteredSongs = state.songs;
 
                       return ListView(
                         physics: const BouncingScrollPhysics(),
@@ -149,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             filteredSongs: filteredSongs,
                             allSongs: state.songs,
                             onSongTap: (index) =>
-                                _navigateToPlayer(context, index),
+                                _navigateToPlayer(context, state.songs, index),
                           ),
 
                           // Album highlights (horizontal list)
@@ -157,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             filteredSongs: filteredSongs,
                             allSongs: state.songs,
                             onSongTap: (index) =>
-                                _navigateToPlayer(context, index),
+                                _navigateToPlayer(context, state.songs, index),
                           ),
 
                           // Track List
@@ -165,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             filteredSongs: filteredSongs,
                             allSongs: state.songs,
                             onSongTap: (index) =>
-                                _navigateToPlayer(context, index),
+                                _navigateToPlayer(context, state.songs, index),
                           ),
                           60.vS, // Buffer space for mini-player
                         ],

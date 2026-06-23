@@ -47,6 +47,7 @@ dependencies:
   just_audio_background: ^0.0.1-beta.9
   provider: ^6.0.5
   rxdart: ^0.28.0
+  youtube_explode_dart: ^3.1.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
