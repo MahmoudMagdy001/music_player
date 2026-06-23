@@ -57,31 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToPlayer(BuildContext context, int index) async {
-    final navigator = Navigator.of(context);
     final player = getIt<AudioPlayer>();
     await player.seek(Duration.zero, index: index);
     unawaited(player.play());
 
-    if (!mounted) return;
-    unawaited(
-      navigator.push(
-        PageRouteBuilder<void>(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const MusicPlayerScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(0.0, 1.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOutCubic;
-            final tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
-        ),
-      ),
-    );
+    if (!context.mounted) return;
+    unawaited(MusicPlayerScreen.show(context));
   }
 
   @override

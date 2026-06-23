@@ -8,12 +8,29 @@ import 'package:music_player/features/music/presentation/widgets/widgets.dart';
 class MusicPlayerScreen extends StatefulWidget {
   const MusicPlayerScreen({super.key});
 
+  static Future<void> show(BuildContext context) => showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black.withValues(alpha: 0.5),
+        builder: (context) => const MusicPlayerScreen(),
+      );
+
   @override
   State<MusicPlayerScreen> createState() => _MusicPlayerScreenState();
 }
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  double _dragOffset = 0.0;
+  double _opacity = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger fade-in on next frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _opacity = 1.0);
+    });
+  }
 
   void _showQueueSheet(BuildContext context, AudioPlayer player) {
     unawaited(
@@ -42,35 +59,16 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         }
 
         final metadata = state.currentSource!.tag as MediaItem;
+        final bottomInset = MediaQuery.of(context).padding.bottom;
 
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onVerticalDragUpdate: (details) {
-              setState(() {
-                _dragOffset = (_dragOffset + details.delta.dy)
-                    .clamp(0.0, double.infinity);
-              });
-            },
-            onVerticalDragEnd: (details) {
-              if (_dragOffset > 100 ||
-                  (details.primaryVelocity != null &&
-                      details.primaryVelocity! > 300)) {
-                Navigator.pop(context);
-              } else {
-                setState(() {
-                  _dragOffset = 0.0;
-                });
-              }
-            },
-            onVerticalDragCancel: () {
-              setState(() {
-                _dragOffset = 0.0;
-              });
-            },
-            child: Transform.translate(
-              offset: Offset(0, _dragOffset),
+        return AnimatedOpacity(
+          opacity: _opacity,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOut,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
               child: Stack(
                 children: [
                   // 1. Blurred Background Image
@@ -78,11 +76,16 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
                   // 2. Playback Interface
                   SafeArea(
+                    bottom: false,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      padding: EdgeInsets.only(
+                        top: 30.h,
+                        left: 20.w,
+                        right: 20.w,
+                      ),
                       child: Column(
                         children: [
-                          // Top Action Bar
+                          // Top Action Bar (includes drag handle)
                           PlayerHeader(
                             album: metadata.album,
                             onBackTap: () => Navigator.pop(context),
@@ -96,7 +99,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                           ),
                           const Spacer(),
 
-                          // Song Titles
+                          // Song Title + Artist + Heart
                           SongInfo(
                             title: metadata.title,
                             artist: metadata.artist,
@@ -111,11 +114,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                           const PlayerControlButtons(),
                           const Spacer(),
 
-                          // Bottom Options / Lyrics / Queue Icons
+                          // Bottom Options / Share / Queue Icons
                           PlayerBottomOptions(
                             onQueueTap: () => _showQueueSheet(context, player),
                           ),
-                          12.vS,
+                          SizedBox(height: 12.h + bottomInset),
                         ],
                       ),
                     ),

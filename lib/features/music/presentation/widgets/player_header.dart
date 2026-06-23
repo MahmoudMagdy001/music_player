@@ -13,57 +13,77 @@ class PlayerHeader extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.white,
-              size: 30.r,
-            ),
-            onPressed: onBackTap,
-          ),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  context.l10n.player.toUpperCase(),
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
+          // ── Header row ────────────────────────────────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Back / dismiss button
+              _HeaderIconButton(
+                icon: Icons.keyboard_arrow_down_rounded,
+                size: 30.r,
+                onPressed: onBackTap,
+              ),
+
+              // Center label
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.l10n.player.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.5,
+                      ),
+                    ),
+                    3.vS,
+                    Text(
+                      album ?? 'Single',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-                2.vS,
-                Text(
-                  album ?? 'Single',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Opacity(
-            opacity: 0,
-            child: IgnorePointer(
-              child: IconButton(
-                icon: Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  size: 30.r,
-                ),
+              ),
+
+              // More-options button (visually balanced, no-op for now)
+              _HeaderIconButton(
+                icon: Icons.more_vert_rounded,
+                size: 24.r,
                 onPressed: () {},
               ),
-            ),
+            ],
           ),
         ],
+      );
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  final VoidCallback onPressed;
+
+  const _HeaderIconButton({
+    required this.icon,
+    required this.size,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+        icon: Icon(icon, color: Colors.white, size: size),
+        onPressed: onPressed,
+        splashRadius: 22.r,
       );
 }

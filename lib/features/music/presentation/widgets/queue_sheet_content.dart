@@ -21,15 +21,15 @@ class QueueSheetContent extends StatelessWidget {
         return Container(
           height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: const Color(0xFF242424),
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
             children: [
-              // Header handle bar
-              12.vS,
+              // ── Drag handle ──────────────────────────────────────
+              14.vS,
               Container(
-                width: 40.w,
+                width: 36.w,
                 height: 4.h,
                 decoration: BoxDecoration(
                   color: Colors.white30,
@@ -45,8 +45,14 @@ class QueueSheetContent extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              8.vS,
-              const Divider(color: Colors.white12),
+              10.vS,
+              Divider(
+                color: Colors.white.withValues(alpha: 0.08),
+                height: 1,
+                thickness: 1,
+              ),
+
+              // ── Queue list ───────────────────────────────────────
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
@@ -57,45 +63,79 @@ class QueueSheetContent extends StatelessWidget {
                     final currentMetadata = current?.tag as MediaItem?;
                     final isCurrent = currentMetadata?.id == metadata.id;
 
-                    return ListTile(
-                      onTap: () async {
-                        await player.seek(Duration.zero, index: index);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                      leading: CommonImage(
-                        imageUrl: metadata.artUri.toString(),
-                        width: 40.w,
-                        height: 40.h,
-                        borderRadius: 4.0,
+                    return IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          // Green left-border for current track
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 3.w,
+                            color: isCurrent
+                                ? context.appColors.success
+                                : Colors.transparent,
+                          ),
+
+                          // List tile
+                          Expanded(
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 14.w,
+                                vertical: 2.h,
+                              ),
+                              tileColor: isCurrent
+                                  ? context.appColors.success
+                                      .withValues(alpha: 0.07)
+                                  : Colors.transparent,
+                              onTap: () async {
+                                await player.seek(Duration.zero, index: index);
+                                if (context.mounted) Navigator.pop(context);
+                              },
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(6.r),
+                                child: CommonImage(
+                                  imageUrl: metadata.artUri.toString(),
+                                  width: 42.w,
+                                  height: 42.h,
+                                  borderRadius: 6.0,
+                                ),
+                              ),
+                              title: Text(
+                                metadata.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isCurrent
+                                      ? context.appColors.success
+                                      : Colors.white,
+                                  fontWeight: isCurrent
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                              subtitle: Text(
+                                metadata.artist ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isCurrent
+                                      ? context.appColors.success
+                                          .withValues(alpha: 0.75)
+                                      : Colors.white54,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                              trailing: isCurrent
+                                  ? Icon(
+                                      Icons.volume_up_rounded,
+                                      color: context.appColors.success,
+                                      size: 20.r,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ],
                       ),
-                      title: Text(
-                        metadata.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: isCurrent ? context.appColors.success : Colors.white,
-                          fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                      subtitle: Text(
-                        metadata.artist ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: isCurrent
-                              ? context.appColors.success.withValues(alpha: 0.8)
-                              : Colors.white54,
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                      trailing: isCurrent
-                          ? Icon(
-                              Icons.volume_up_rounded,
-                              color: context.appColors.success,
-                              size: 20.r,
-                            )
-                          : null,
                     );
                   },
                 ),

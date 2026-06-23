@@ -1,4 +1,5 @@
-import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:music_player/core/imports/core_imports.dart';
 import 'package:music_player/core/imports/packages_imports.dart';
@@ -22,151 +23,166 @@ class MiniPlayer extends StatelessWidget {
         final metadata = state.currentSource!.tag as MediaItem;
 
         return Container(
-          height: 62.h,
+          height: 68.h,
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFF212121),
-            borderRadius: BorderRadius.circular(8.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 8.r,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(8.r),
-            onTap: () {
-              unawaited(
-                Navigator.of(context).push(
-                  PageRouteBuilder<void>(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const MusicPlayerScreen(),
-                    transitionsBuilder: (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                    ) {
-                      const begin = Offset(0.0, 1.0);
-                      const end = Offset.zero;
-                      const curve = Curves.easeInOutCubic;
-                      final tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.r),
+            child: Stack(
+              children: [
+                // ── Blurred album art backdrop ──────────────────────
+                Positioned.fill(
+                  child: CommonImage(
+                    imageUrl: metadata.artUri.toString(),
+                    borderRadius: 0,
                   ),
                 ),
-              );
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: Row(
-                      children: [
-                        CommonImage(
-                          imageUrl: metadata.artUri.toString(),
-                          width: 44.w,
-                          height: 44.h,
-                          borderRadius: 4.0,
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: 0.72),
+                            Colors.black.withValues(alpha: 0.60),
+                          ],
                         ),
-                        10.hS,
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ── Content ─────────────────────────────────────────
+                InkWell(
+                  borderRadius: BorderRadius.circular(12.r),
+                  onTap: () => MusicPlayerScreen.show(context),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          child: Row(
                             children: [
-                              Text(
-                                metadata.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.bold,
+                              // Album thumbnail
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(6.r),
+                                child: CommonImage(
+                                  imageUrl: metadata.artUri.toString(),
+                                  width: 44.w,
+                                  height: 44.h,
+                                  borderRadius: 6.0,
                                 ),
                               ),
-                              Text(
-                                metadata.artist ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 11.sp,
+                              10.hS,
+
+                              // Song info
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      metadata.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    2.vS,
+                                    Text(
+                                      metadata.artist ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.white60,
+                                        fontSize: 11.sp,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                              ),
+
+                              // Prev Button
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  Icons.skip_previous_rounded,
+                                  color: Colors.white,
+                                  size: 28.r,
+                                ),
+                                onPressed: player.seekToPrevious,
+                              ),
+
+                              // Play/Pause Button
+                              StreamBuilder<PlayerState>(
+                                stream: player.playerStateStream,
+                                builder: (context, snap) {
+                                  final playing = snap.data?.playing ?? false;
+                                  return IconButton(
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      playing
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
+                                      color: Colors.white,
+                                      size: 32.r,
+                                    ),
+                                    onPressed: () => playing
+                                        ? player.pause()
+                                        : player.play(),
+                                  );
+                                },
+                              ),
+
+                              // Next Button
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  Icons.skip_next_rounded,
+                                  color: Colors.white,
+                                  size: 28.r,
+                                ),
+                                onPressed: player.seekToNext,
                               ),
                             ],
                           ),
                         ),
-                        // Prev Button
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.skip_previous_rounded,
-                            color: Colors.white,
-                            size: 28.r,
-                          ),
-                          onPressed: player.seekToPrevious,
-                        ),
-                        // Play/Pause Button
-                        StreamBuilder<PlayerState>(
-                          stream: player.playerStateStream,
-                          builder: (context, snap) {
-                            final playing = snap.data?.playing ?? false;
-                            return IconButton(
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                playing
-                                    ? Icons.pause_rounded
-                                    : Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: 32.r,
-                              ),
-                              onPressed: () => playing ? player.pause() : player.play(),
-                            );
-                          },
-                        ),
-                        // Next Button
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.skip_next_rounded,
-                            color: Colors.white,
-                            size: 28.r,
-                          ),
-                          onPressed: player.seekToNext,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Premium thin progress bar indicator at bottom of mini-player
-                StreamBuilder<Duration>(
-                  stream: player.positionStream,
-                  builder: (context, posSnap) {
-                    final position = posSnap.data ?? Duration.zero;
-                    final duration = player.duration ?? Duration.zero;
-                    final progress = duration.inMilliseconds > 0
-                        ? position.inMilliseconds / duration.inMilliseconds
-                        : 0.0;
-                    return Align(
-                      alignment: Alignment.bottomLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: progress.clamp(0.0, 1.0),
-                        child: Container(
-                          height: 2.h,
-                          color: context.appColors.success,
-                        ),
                       ),
-                    );
-                  },
+
+                      // ── Green progress line at bottom ────────────
+                      StreamBuilder<Duration>(
+                        stream: player.positionStream,
+                        builder: (context, posSnap) {
+                          final position = posSnap.data ?? Duration.zero;
+                          final duration = player.duration ?? Duration.zero;
+                          final progress = duration.inMilliseconds > 0
+                              ? position.inMilliseconds /
+                                  duration.inMilliseconds
+                              : 0.0;
+                          return Align(
+                            alignment: Alignment.bottomLeft,
+                            child: FractionallySizedBox(
+                              widthFactor: progress.clamp(0.0, 1.0),
+                              child: Container(
+                                height: 3.h,
+                                decoration: BoxDecoration(
+                                  color: context.appColors.success,
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(2.r),
+                                    bottomRight: Radius.circular(2.r),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
